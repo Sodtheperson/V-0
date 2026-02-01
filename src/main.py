@@ -17,7 +17,6 @@ font = pygame.font.SysFont(None, 30)
 
 Player = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.2, pgm.Vector2(0,0), pgm.Vector2(0,0), 5)
 Player.acceleration.y = 1
-Player.isGrounded = True
 while running:
     pygame.display.set_caption("SOMEBODY HELP ME") #little bar at the top
     
@@ -45,7 +44,7 @@ while running:
     
     
     if keys[pygame.K_w] and Player.isGrounded:
-        print("there arent any walls to climb yet idiot")
+        #TODO: remove jump keybind
         Player.move_jump()
     if keys[pygame.K_s]:
         print("hi")
