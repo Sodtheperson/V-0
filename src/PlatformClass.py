@@ -19,22 +19,25 @@ implement class into Constants
 
 # TLDR: use sprites instead of making new rects since it solves image + rect and keeps states.
 """
-class Sprite(pygame.sprite.Sprite):
-    def __init__(self, color, height, width):
+class Platforms(pygame.sprite.Sprite):
+    def __init__(self, x, y, image : str | tuple, state : str = 'solid', width=None, height=None):
         super().__init__()
 
-        self.image = pygame.Surface([width, height]) < image stuff, we can shift to loading an image from assets
-        self.image.fill(SURFACE_COLOR) < this is just color for if we arent doing that
-        self.image.set_colorkey(COLOR) < same for above
-
-        pygame.draw.rect(self.image, color, pygame.Rect(0, 0, width, height)) < we can use this as the rect
+        self.image = pygame.image.load(image).convert_alpha() 
+        if image != str: # if it isnt a string, ergo not an image.png,
+            self.image = pygame.Surface((width, height))  # create a blank surface
+            self.image.fill(image) # fill it with the color, which is in the place of image
 
         self.rect = self.image.get_rect() < and then it defines the rect
+        self.text.x = x
+        self.text.y = y
+        self.state = state
+
         
-        # we could also add state here, then add the appending to the list after.
 
 
-    Stole this from the link from before
+    Rewrote to use sprites instead of rects, remove the comments if you wanna incorperate.
+    I also added stuff into main.py for collision checking with states.
 """
 
 # we also have to add some form of forced stage loading soon because making pixel-precise flooring

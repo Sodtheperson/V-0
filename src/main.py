@@ -81,7 +81,27 @@ while running:
     Player.rect.center = Player.pos
     
     Player.isGrounded = False
-    
+    """"
+    rendered_platforms = pygame.sprite.Group()
+
+    ground = Platforms(0, 500, 1000, 50, "ground.png", 'solid')
+    rendered_platforms.add(ground)
+
+    collisions = pygame.sprite.spritecollide(Player, rendered_platforms, False)
+    for platform in collisions:
+        if platform.state == 'solid':
+            # we take the info from below
+        elif platform.state == 'passthrough':
+            # do nothing
+        elif platform.state == 'semisolid':
+            # only top has collision
+        elif platform.state == 'box':
+            # pushable box example-- still gotta figure that out.
+
+
+    rendered_platforms.draw(screen) # we draw all the platforms that are currently supposed to be rendered 
+    # should move this to constants, and append there to have consistency.
+    """
     for floor in floors:
         pygame.draw.rect(screen, "green", floor)
         if Player.rect.colliderect(floor) and Player.velocity.y > 0 and prev_rect.bottom <= floor.top:
