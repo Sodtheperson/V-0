@@ -5,38 +5,42 @@ from CharacterClass import Character
 from Constants import *
 from level import test_level
 
+'''
+ISSUES: 
+'p' state platforms colisions don't work properly
+'''
+
 #Helper function for collision. 
 
-def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, prev_Colidee: pygame.Rect = None):
-    
-    if prev_Colidee is None:
-        prev_Colidee = Colidee.rect.copy()
+def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False,):
     
     collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, RemoveColliderfromList)
     
     for thing in collisionslist:
-        print(collisionslist[0].__str__())
         if thing.state != 'u': # uncollidable
             
             if thing.state == 's': # solid
-                #Colidee.rect.top
-                if Colidee.velocity.y < 0:
-                    Colidee.rect.bottom = thing.rect.top
-                    Colidee.velocity.y = 0
-                    
-                if Colidee.velocity.x > 0:
-                    Colidee.rect.right = thing.rect.left
-                    Colidee.velocity.x = 0
-                
-                elif Colidee.velocity.x < 0:
-                    Colidee.rect.left = thing.rect.right
-                    Colidee.velocity.x = 0
-                    
-                
-            print(str(Colidee.velocity.y > 0) + " | " + str(prev_Colidee.bottom >= thing.rect.top))
-            print(prev_Colidee.bottom," | " + str(thing.rect.top))
-            print(Colidee.rect.bottom)
-            if Colidee.velocity.y > 0 and prev_Colidee.bottom >= thing.rect.top: #else / when its passthrough 
+                #(Colidee.rect.bottom - thing.rect.top)
+                #(Colidee.rect.top - thing.rect.bottom)
+                if max((Colidee.rect.bottom - thing.rect.top),(Colidee.rect.top - thing.rect.bottom)) <= max((Colidee.rect.left - thing.rect.right),(Colidee.rect.right - thing.rect.left)):
+                    if (Colidee.rect.bottom - thing.rect.top) < (Colidee.rect.top - thing.rect.bottom):
+                        Colidee.rect.top = thing.rect.bottom
+                        Colidee.velocity.y = 0
+                    else:
+                        Colidee.rect.bottom = thing.rect.top
+                        Colidee.velocity.y = 0
+                        Colidee.isGrounded = True
+                else:
+                    if (Colidee.rect.left - thing.rect.right) < (Colidee.rect.right - thing.rect.left):
+                        Colidee.rect.left = thing.rect.right
+                        Colidee.velocity.x = 0
+                    else:
+                        Colidee.rect.right = thing.rect.left
+                        Colidee.velocity.x = 0
+                #VERY IMPORTANT: Updating the datatype Character 's rect must be done while updating it's pos or else MAJOR consequences
+                Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
+            
+            elif (Colidee.rect.bottom - Colidee.velocity.y) > thing.rect.top: #if partially solid and was above previosely
                 print("hi")
                 #if they are falling + if their bottom is lower than the top, then:
                 Colidee.rect.bottom = thing.rect.top
@@ -71,8 +75,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            
-    Player.rect.center = Player.pos
+    
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
@@ -90,7 +93,7 @@ while running:
     
     
     if keys[pygame.K_w] and Player.isGrounded:
-        #TODO: remove jump keybind TODO TODO TODO TODO TODO TODO TODO TODO TODO >TODO.TODO.TODO,TODO"TODO=TODO=TODO
+        #TODO: remove jump keybind
         Player.move_jump()
     if keys[pygame.K_s]:
         print("hi")
@@ -109,28 +112,27 @@ while running:
        Player.acceleration.y += 0.1
     
     
-      
-    prev_rect = Player.rect.copy()
     
     pygame.draw.rect(screen, "green", Player.rect, 2)
-    #pygame.draw.rect(screen, "red", prev_rect, 2)
     
-    Player.velocity += Player.acceleration
+    #TODO: move this stuff into Character.update and call it here instead
+    Player.velocity += Player.acceleration * (dt+1)
     
     Player.velocity.y = min(Player.velocity.y, terminal_velocity)
-    
     Player.velocity.x = max(-Player.maxspeed, min(Player.velocity.x, Player.maxspeed))
     
     
     
     Player.pos += Player.velocity
-    Player.rect.center = Player.pos
+    Player.rect.center = (int(Player.pos.x), int(Player.pos.y)) # safer conversion
     
     Player.isGrounded = False
 
 
     test_level.draw(screen)
     prev_rect = collisions(Player, test_level)
+
+    Player.pos = pygame.math.Vector2(Player.rect.center)
     
     #add velocity to acceleration
     
@@ -138,11 +140,7 @@ while running:
         Player.velocity.x *= friction #decellerate if not moving (acceleration = 0)
     if 0.1 >= Player.velocity.x and Player.velocity.x >= -0.1 and Player.acceleration.x == 0:
         Player.velocity.x = 0 #set to 0 at small numbers to eliminate scientific configuration Ex. 1.273 * e^10
-        
-
     
-        
-    Player.pos.x += Player.velocity.x * dt
     
     
     screen.blit(Player.image, Player.rect)
