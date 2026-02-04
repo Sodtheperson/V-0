@@ -1,5 +1,4 @@
 import pygame
-
 '''
 TODO: finish this
 
@@ -11,49 +10,37 @@ implement class into Constants
 # Minor thing: 
 # https://www.geeksforgeeks.org/python/pygame-creating-sprites/
 # this is just an example of sprite classes, but also
-# making a sprite also creates a rect object for it
+# making a sprite also creates a rect object for it            <- then why did you add self.rect?
 # so we could use the sprite's rect instead of making one here
 # and since sprites can have images, that would solve the image issue too
 # plus it would also still be a platform class we can index in the floors list,
 # so we can check states on it 
 
 # TLDR: use sprites instead of making new rects since it solves image + rect and keeps states.
-"""
-class Platforms(pygame.sprite.Sprite):
-    def __init__(self, x, y, image : str | tuple, state : str = 'solid', width=None, height=None):
+class Platform(pygame.sprite.Sprite):
+    def __init__(self, pos: tuple[int,int], image : str | None, state : str = 's', width: None | int =None, height: None | int =None):
         super().__init__()
 
-        self.image = pygame.image.load(image).convert_alpha() 
-        if image != str: # if it isnt a string, ergo not an image.png,
+        if isinstance(image, str): # if it is a string
+            self.image = pygame.image.load(image).convert_alpha() 
+        elif not width is None or not height is None:
             self.image = pygame.Surface((width, height))  # create a blank surface
             self.image.fill(image) # fill it with the color, which is in the place of image
-
-        self.rect = self.image.get_rect() < and then it defines the rect
-        self.text.x = x
-        self.text.y = y
-        self.state = state
-
+        else:
+            raise ValueError("Error in Platform Constructor: image and (width or height) were None")
         
+        self.rect = self.image.get_rect()
+        self.pos = pos # stores the position of the top left pixel
+
+        # s is solid
+        # p is partially solid (only the top collision)
+        # u is uncolidable
+        if state in ["s","p","u"]:
+            self.state = state
+        else:
+            raise ValueError("Error in Platform Constructor: invalid state type")
+#
 
 
-    Rewrote to use sprites instead of rects, remove the comments if you wanna incorperate.
-    I also added stuff into main.py for collision checking with states.
-"""
 
-# we also have to add some form of forced stage loading soon because making pixel-precise flooring
-# is gonna suck if we have to go through the entire level every time just to get to the one we need to test
-# but thats for a later problem
 
-class Platform(pygame.Rect):
-    def __init__ (self, left, top, width, height, state):
-        super().__init__(left, top, width, height)
-        self.state = state
-        return
-    def __init__ (self, top_left, size, state):
-        super().__init__(top_left, size)
-        self.state = state
-        return
-    def __init__ (self, object, state):
-        super().__init__(object)
-        self.state = state
-        return
