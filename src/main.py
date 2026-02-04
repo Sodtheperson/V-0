@@ -5,7 +5,7 @@ from CharacterClass import Character
 from Constants import *
 from level import test_level
 
-#Helper function for collision
+#Helper function for collision. 
 
 def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, prev_Colidee: pygame.Rect = None):
     
