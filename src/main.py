@@ -46,7 +46,7 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                         Colidee.rect.bottom = thing.rect.top
                         Colidee.velocity.y = 0
                         Colidee.isGrounded = True
-                        # I DIDN'T TEST THIS. I GOT NO CLUE IF IT WORKS.
+                        # I DIDN'T TEST THIS. I GOT NO CLUE IF IT WORKS. | It won't work. the edges of the platform would be able to be passed through occasionally. Also the condition is not made for coming from the bottom
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
             """
             elif (Colidee.rect.bottom - Colidee.velocity.y) > thing.rect.top: #if partially solid and was above previosely
