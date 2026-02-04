@@ -34,18 +34,27 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                     if (Colidee.rect.left - thing.rect.right) < (Colidee.rect.right - thing.rect.left):
                         Colidee.rect.left = thing.rect.right
                         Colidee.velocity.x = 0
-                    else:
+                    else: # this else handles literally every collision, even if all else fails, so make it an elif.
                         Colidee.rect.right = thing.rect.left
                         Colidee.velocity.x = 0
                 #VERY IMPORTANT: Updating the datatype Character 's rect must be done while updating it's pos or else MAJOR consequences
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-            
+
+            elif thing.state == 'p': # partially solid
+                if max((Colidee.rect.bottom - thing.rect.top),(Colidee.rect.top - thing.rect.bottom)) >= max((Colidee.rect.left - thing.rect.right),(Colidee.rect.right - thing.rect.left)):
+                    if (Colidee.rect.bottom - thing.rect.top) > (Colidee.rect.top - thing.rect.bottom):
+                        Colidee.rect.bottom = thing.rect.top
+                        Colidee.velocity.y = 0
+                        Colidee.isGrounded = True
+                        # I DIDN'T TEST THIS. I GOT NO CLUE IF IT WORKS.
+                Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
+            """
             elif (Colidee.rect.bottom - Colidee.velocity.y) > thing.rect.top: #if partially solid and was above previosely
                 print("hi")
                 #if they are falling + if their bottom is lower than the top, then:
                 Colidee.rect.bottom = thing.rect.top
                 Colidee.velocity.y = 0
-                Colidee.isGrounded = True
+                Colidee.isGrounded = True"""
             
     return Colidee.rect.copy()
 
@@ -64,7 +73,6 @@ font = pygame.font.SysFont(None, 30)
 
 Player = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.2, pgm.Vector2(0,0), pgm.Vector2(0,0), 5)
 
-prev_rect = Player.rect.copy()
 
 Player.acceleration.y = 1
 while running:
@@ -130,7 +138,7 @@ while running:
 
 
     test_level.draw(screen)
-    prev_rect = collisions(Player, test_level)
+    Player.rect = collisions(Player, test_level)
 
     Player.pos = pygame.math.Vector2(Player.rect.center)
     
