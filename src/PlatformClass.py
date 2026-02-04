@@ -10,7 +10,7 @@ implement class into Constants
 # Minor thing: 
 # https://www.geeksforgeeks.org/python/pygame-creating-sprites/
 # this is just an example of sprite classes, but also
-# making a sprite also creates a rect object for it            <- then why did you add self.rect?
+# making a sprite also creates a rect object for it            <- then why did you add self.rect? <- it defined a rect as the image's rect, but its a method, so i dont wanna call it repeatedly just to reference the same information
 # so we could use the sprite's rect instead of making one here
 # and since sprites can have images, that would solve the image issue too
 # plus it would also still be a platform class we can index in the floors list,
@@ -29,7 +29,7 @@ class Platform(pygame.sprite.Sprite):
         else:
             raise ValueError("Error in Platform Constructor: image and (width or height) were None")
         
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(topleft=pos)
         self.pos = pos # stores the position of the top left pixel
 
         # s is solid
