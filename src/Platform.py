@@ -1,22 +1,8 @@
 import pygame
-'''
-TODO: finish this
 
-add the image to the platform
-figure out how to store states
-implement class into Constants
-'''
 
-# Minor thing: 
-# https://www.geeksforgeeks.org/python/pygame-creating-sprites/
-# this is just an example of sprite classes, but also
-# making a sprite also creates a rect object for it            <- then why did you add self.rect? <- it defined a rect as the image's rect, but its a method, so i dont wanna call it repeatedly just to reference the same information
-# so we could use the sprite's rect instead of making one here
-# and since sprites can have images, that would solve the image issue too
-# plus it would also still be a platform class we can index in the floors list,
-# so we can check states on it 
 
-# TLDR: use sprites instead of making new rects since it solves image + rect and keeps states.
+pygame.display.set_mode((1280, 720))
 class Platform(pygame.sprite.Sprite):
     def __init__(self, pos: tuple[int,int], image : str | None, state : str = 's', width: None | int =None, height: None | int =None):
         super().__init__()
@@ -39,8 +25,6 @@ class Platform(pygame.sprite.Sprite):
             self.state = state
         else:
             raise ValueError("Error in Platform Constructor: invalid state type")
-#
-
-
-
-
+    
+    def __str__(self):
+        return "platform at " + str(self.pos) + "with state" + str(self.state)

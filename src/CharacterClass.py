@@ -36,7 +36,7 @@ class Character(pygame.sprite.Sprite):
         self.acceleration.y -= 2
         self.isGrounded = False
         facingMult = {"r": 1, "l": -1}
-        self.acceleration.x += 6 * facingMult[self.facing] * strength
+        self.acceleration.x += 5 * facingMult[self.facing] * strength
     
     def look_left(self) -> None:
         if self.facing == "l":
@@ -52,4 +52,4 @@ class Character(pygame.sprite.Sprite):
     
 
     def __str__(self):
-        return str(self.pos)
+        return "Character at " + str(self.pos)
