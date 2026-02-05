@@ -4,14 +4,14 @@ import pygame
 
 pygame.display.set_mode((1280, 720))
 class Platform(pygame.sprite.Sprite):
-    def __init__(self, pos: tuple[int,int], image : str | None, state : str = 's', width: None | int =None, height: None | int =None):
+    def __init__(self, pos: tuple[int,int], image : str | tuple[int,int,int], state : str = 's', width: None | int =None, height: None | int =None):
         super().__init__()
 
         if isinstance(image, str): # if it is a string
             self.image = pygame.image.load(image).convert_alpha() 
         elif not width is None or not height is None:
             self.image = pygame.Surface((width, height))  # create a blank surface
-            self.image.fill("green") # fill it with the color, which is in the place of image
+            self.image.fill(image) # fill it with the color, which is in the place of image
         else:
             raise ValueError("Error in Platform Constructor: image and (width or height) were None")
         

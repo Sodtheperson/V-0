@@ -2,7 +2,7 @@ import pygame
 import os
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, pos: pygame.Vector2, walkspeed: float, acceleration: pygame.math.Vector2, velocity: pygame.math.Vector2, maxspeed: int) -> None:
+    def __init__(self, pos: pygame.Vector2, walkspeed: int, acceleration: pygame.math.Vector2, velocity: pygame.math.Vector2, maxspeed: int) -> None:
         
         super().__init__()
         

@@ -5,10 +5,7 @@ from CharacterClass import Character
 from Constants import *
 from level import test_level
 
-'''
-ISSUES: 
-'p' state platforms colisions don't work properly
-'''
+
 
 #Helper function for collision. 
 
@@ -20,41 +17,30 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
         if thing.state != 'u': # uncollidable
             
             if thing.state == 's': # solid
-                #(Colidee.rect.bottom - thing.rect.top)
-                #(Colidee.rect.top - thing.rect.bottom)
-                if max((Colidee.rect.bottom - thing.rect.top),(Colidee.rect.top - thing.rect.bottom)) <= max((Colidee.rect.left - thing.rect.right),(Colidee.rect.right - thing.rect.left)):
-                    if (Colidee.rect.bottom - thing.rect.top) < (Colidee.rect.top - thing.rect.bottom):
-                        Colidee.rect.top = thing.rect.bottom
-                        Colidee.velocity.y = 0
-                    else:
+                if min(abs(Colidee.rect.bottom - thing.rect.top),abs(Colidee.rect.top - thing.rect.bottom)) <= min(abs(Colidee.rect.left - thing.rect.right),abs(Colidee.rect.right - thing.rect.left)):
+                    if abs(Colidee.rect.bottom - thing.rect.top) <= abs(Colidee.rect.top - thing.rect.bottom):
                         Colidee.rect.bottom = thing.rect.top
                         Colidee.velocity.y = 0
                         Colidee.isGrounded = True
+                    else:
+                        Colidee.rect.top = thing.rect.bottom
+                        Colidee.velocity.y = 0
                 else:
-                    if (Colidee.rect.left - thing.rect.right) < (Colidee.rect.right - thing.rect.left):
+                    if abs(Colidee.rect.left - thing.rect.right) <= abs(Colidee.rect.right - thing.rect.left):
                         Colidee.rect.left = thing.rect.right
                         Colidee.velocity.x = 0
+                        Colidee.acceleration.x = 0
                     else: # this else handles literally every collision, even if all else fails, so make it an elif.
                         Colidee.rect.right = thing.rect.left
                         Colidee.velocity.x = 0
+                        Colidee.acceleration.x = 0
                 #VERY IMPORTANT: Updating the datatype Character 's rect must be done while updating it's pos or else MAJOR consequences
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-
-            elif thing.state == 'p': # partially solid
-                if max((Colidee.rect.bottom - thing.rect.top),(Colidee.rect.top - thing.rect.bottom)) >= max((Colidee.rect.left - thing.rect.right),(Colidee.rect.right - thing.rect.left)):
-                    if (Colidee.rect.bottom - thing.rect.top) > (Colidee.rect.top - thing.rect.bottom):
-                        Colidee.rect.bottom = thing.rect.top
-                        Colidee.velocity.y = 0
-                        Colidee.isGrounded = True
-                        # I DIDN'T TEST THIS. I GOT NO CLUE IF IT WORKS. | It won't work. the edges of the platform would be able to be passed through occasionally. Also the condition is not made for coming from the bottom
-                Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-            """
-            elif (Colidee.rect.bottom - Colidee.velocity.y) > thing.rect.top: #if partially solid and was above previosely
-                print("hi")
-                #if they are falling + if their bottom is lower than the top, then:
+            
+            elif (Colidee.rect.bottom - Colidee.velocity.y) <= thing.rect.top: #if partially solid and was above previosely
                 Colidee.rect.bottom = thing.rect.top
                 Colidee.velocity.y = 0
-                Colidee.isGrounded = True"""
+                Colidee.isGrounded = True
             
     return Colidee.rect.copy()
 
