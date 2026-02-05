@@ -9,8 +9,8 @@ class Platform(pygame.sprite.Sprite):
 
         if isinstance(image, str): # if it is a string
             self.image = pygame.image.load(image).convert_alpha() 
-        elif not width is None or not height is None:
-            self.image = pygame.Surface((width, height))  # create a blank surface
+        elif not (width is None) or not (height is None):
+            self.image = pygame.Surface((float(width), float(height)))  # create a blank surface
             self.image.fill(image) # fill it with the color, which is in the place of image
         else:
             raise ValueError("Error in Platform Constructor: image and (width or height) were None")
