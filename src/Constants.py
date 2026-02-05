@@ -1,4 +1,3 @@
-import pygame
 
 friction = 0.85
 air_resistence = 0.8

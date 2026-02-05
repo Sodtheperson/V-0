@@ -1,6 +1,6 @@
 import pygame
 import os
-from Constants import terminal_velocity, friction
+from Constants import terminal_velocity, friction, gravity
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, walkspeed: float, maxspeed: int) -> None:
@@ -33,11 +33,21 @@ class Character(pygame.sprite.Sprite):
         self.acceleration.x = self.walkspeed
         self.look_right()
     
-    def move_jump (self, strength: int = 1) -> None:
+    def move_jump (self) -> None:
         self.acceleration.y -= 2
         self.isGrounded = False
         facingMult = {"r": 1, "l": -1}
-        self.acceleration.x += 5 * facingMult[self.facing] * strength
+        self.acceleration.x += 5 * facingMult[self.facing]
+    def move_climb (self, collisionslist) -> None:
+        for thing in collisionslist:
+            print("Called")
+            if thing.state != 's': # solid
+                return
+            
+            if min(abs(self.rect.bottom - thing.rect.top),abs(self.rect.top - thing.rect.bottom)) > min(abs(self.rect.left - thing.rect.right),abs(self.rect.right - thing.rect.left)):
+                if (abs(self.rect.bottom - thing.rect.top) <= 100) and (self.velocity.y > -2.5):
+                    self.velocity.y -= 4
+        return
     
     def look_left(self) -> None:
         if self.facing == "l":
@@ -51,9 +61,11 @@ class Character(pygame.sprite.Sprite):
         self.image = pygame.transform.flip(self.base_image, True, False)
 
     def update(self,dt):
-        print(self.velocity, "pre-update velocity")
-        self.velocity += self.acceleration * (dt+1)
         
+        if (self.acceleration.y < gravity and not self.isGrounded):
+            self.acceleration.y += 0.1
+        
+        self.velocity += self.acceleration * (dt+1)
 
         self.velocity.y = min(self.velocity.y, terminal_velocity)
         self.velocity.x = max(-self.maxspeed, min(self.velocity.x, self.maxspeed))
@@ -65,6 +77,7 @@ class Character(pygame.sprite.Sprite):
 
         self.pos += self.velocity
         self.rect.center = (int(self.pos.x), int(self.pos.y)) # safer conversion
+    #
 
     def __str__(self):
         return "Character at " + str(self.pos)
@@ -84,13 +97,18 @@ class Dog(Character):
         self.rect = self.image.get_rect(center=pos)
         self.facing = "r" # l is left, r is right
         
-        self.actions = {"": None, "w_l": self.move_left}
-        self.cur_act = ""
+        self.cur_act = self.nothing
         self.act_strt_time = 0
     #
 
+    def nothing(self):
+        pass
+
     def update(self, dt) -> None:
         super().update(dt)
-        if self.actions[self.cur_act] is None:
-            self.c
+        if self.cur_act is self.nothing:
+            self.cur_act = self.move_left
+            self.act_strt_time = dt
+        #finish later
+        
         

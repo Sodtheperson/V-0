@@ -10,7 +10,8 @@ from level import test_level
 #Helper function for collision. 
 
 def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, E_key : bool = False) -> None:
-    
+    Colidee.isGrounded = False
+
     collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, RemoveColliderfromList)
     
     for thing in collisionslist:
@@ -26,30 +27,14 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                         Colidee.rect.top = thing.rect.bottom
                         Colidee.velocity.y = 0
                 else:
-                    print(Colidee.velocity.x, "--- 1")
-                    print(Colidee.acceleration.x, "---- A")
                     if abs(Colidee.rect.left - thing.rect.right) <= abs(Colidee.rect.right - thing.rect.left):
                         Colidee.rect.left = thing.rect.right
                         Colidee.velocity.x = 0
                         Colidee.acceleration.x = 0
-                        
-                        if E_key and (abs(Colidee.rect.bottom - thing.rect.top) <= 100):
-                            if Colidee.velocity.y > -2.5:
-                                Colidee.velocity.y -= 4
-
                     else:
-                        print(Colidee.velocity.x, "--- 2")
-                        print(Colidee.acceleration.x, "---- B")
                         Colidee.rect.right = thing.rect.left
                         Colidee.velocity.x = 0
                         Colidee.acceleration.x = 0
-
-                        Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-                        if E_key and abs(Colidee.rect.bottom - thing.rect.top)  <= 100:
-                            print(Colidee.velocity.x, "--- 3")
-                            print(Colidee.acceleration.x, "---- C")
-                            if Colidee.velocity.y > -2.5:
-                                Colidee.velocity.y -= 6
                                 
                 #VERY IMPORTANT: Updating the datatype Character 's rect must be done while updating it's pos or else MAJOR consequences
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
@@ -118,8 +103,6 @@ while running:
     elif Player.isGrounded:
         Player.acceleration.x = 0
     
-    if (Player.acceleration.y < gravity and not Player.isGrounded):
-       Player.acceleration.y += 0.1
     
     
     
@@ -128,7 +111,9 @@ while running:
     #TODO: move this stuff into Character.update and call it here instead
     Player.update(dt)
 
-    
+    if keys[pygame.K_e]:
+        Player.move_climb(pygame.sprite.spritecollide(Player, test_level, False))
+
     collisions(Player, test_level, E_key=keys[pygame.K_e])
     Player.pos = pygame.math.Vector2(Player.rect.center)
     
