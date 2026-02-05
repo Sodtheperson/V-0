@@ -1,8 +1,9 @@
 import pygame
 import os
+from Constants import terminal_velocity, friction
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, pos: pygame.Vector2, walkspeed: float, acceleration: pygame.math.Vector2, velocity: pygame.math.Vector2, maxspeed: int) -> None:
+    def __init__(self, pos: pygame.Vector2, walkspeed: float, maxspeed: int) -> None:
         
         super().__init__()
         
@@ -10,7 +11,7 @@ class Character(pygame.sprite.Sprite):
         asset_path = os.path.join(base_path,"..","assets","hahahah.png")
         
         self.image = pygame.image.load(asset_path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (64,64))
+        self.image = pygame.transform.scale(self.image, (40,80))
         self.base_image = self.image
         self.rect = self.image.get_rect(center=pos)
         self.facing = "r" # l is left, r is right
@@ -29,7 +30,7 @@ class Character(pygame.sprite.Sprite):
         self.acceleration.x = -self.walkspeed
         self.look_left()
     def move_right(self) -> None:
-        self.acceleration.x =  self.walkspeed
+        self.acceleration.x = self.walkspeed
         self.look_right()
     
     def move_jump (self, strength: int = 1) -> None:
@@ -49,7 +50,47 @@ class Character(pygame.sprite.Sprite):
         self.facing = "r"
         self.image = pygame.transform.flip(self.base_image, True, False)
 
-    
+    def update(self,dt):
+        print(self.velocity, "pre-update velocity")
+        self.velocity += self.acceleration * (dt+1)
+        
+
+        self.velocity.y = min(self.velocity.y, terminal_velocity)
+        self.velocity.x = max(-self.maxspeed, min(self.velocity.x, self.maxspeed))
+        
+        if self.acceleration.x == 0:
+            self.velocity.x *= friction #decellerate if not moving (acceleration = 0)
+        if 0.5 >= self.velocity.x and self.velocity.x >= -0.5 and self.acceleration.x == 0:
+            self.velocity.x = 0 #set to 0 at small numbers to eliminate scientific configuration Ex. 1.273 * e^10
+
+        self.pos += self.velocity
+        self.rect.center = (int(self.pos.x), int(self.pos.y)) # safer conversion
 
     def __str__(self):
         return "Character at " + str(self.pos)
+#
+
+class Dog(Character):
+    def __init__(self, pos: pygame.Vector2, walkspeed: float, maxspeed: int) -> None:
+        
+        super().__init__(pos, walkspeed, maxspeed)
+        
+        base_path = os.path.dirname(__file__)
+        asset_path = os.path.join(base_path,"..","assets","hahahah.png")
+        
+        self.image = pygame.image.load(asset_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (80,30))
+        self.base_image = self.image
+        self.rect = self.image.get_rect(center=pos)
+        self.facing = "r" # l is left, r is right
+        
+        self.actions = {"": None, "w_l": self.move_left}
+        self.cur_act = ""
+        self.act_strt_time = 0
+    #
+
+    def update(self, dt) -> None:
+        super().update(dt)
+        if self.actions[self.cur_act] is None:
+            self.c
+        
