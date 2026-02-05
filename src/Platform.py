@@ -27,4 +27,4 @@ class Platform(pygame.sprite.Sprite):
             raise ValueError("Error in Platform Constructor: invalid state type")
     
     def __str__(self):
-        return "platform at " + str(self.pos) + "with state" + str(self.state)
+        return "platform at " + str(self.pos) + " with state " + str(self.state)

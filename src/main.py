@@ -4,7 +4,7 @@ import pygame.math as pgm
 from CharacterClass import Character
 from Constants import *
 from level import test_level
-
+from typing import Any
 
 
 #Helper function for collision. 
@@ -22,12 +22,10 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                     if abs(Colidee.rect.bottom - thing.rect.top) <= abs(Colidee.rect.top - thing.rect.bottom):
                         Colidee.rect.bottom = thing.rect.top
                         Colidee.velocity.y = 0
-                        Colidee.acceleration.y = 0
                         Colidee.isGrounded = True
                     else:
                         Colidee.rect.top = thing.rect.bottom
                         Colidee.velocity.y = 0
-                        Colidee.acceleration.y = 0
                 else:
                     if abs(Colidee.rect.left - thing.rect.right) <= abs(Colidee.rect.right - thing.rect.left):
                         Colidee.rect.left = thing.rect.right
@@ -48,8 +46,14 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
             
     return
+#
 
-
+def maxGroup(group: list[Any], other: list[Any]):
+    if len(group) >= len(other):
+        return group
+    else:
+        return other
+#
 
 # pygame setup
 pygame.init()
@@ -114,7 +118,7 @@ while running:
     Player.update(dt)
 
     if keys[pygame.K_e]:
-        Player.move_climb(pygame.sprite.spritecollide(Player, test_level, False))
+        Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)))
 
     collisions(Player, test_level, E_key=keys[pygame.K_e])
     Player.pos = pygame.math.Vector2(Player.rect.center)
