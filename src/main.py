@@ -22,10 +22,12 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                     if abs(Colidee.rect.bottom - thing.rect.top) <= abs(Colidee.rect.top - thing.rect.bottom):
                         Colidee.rect.bottom = thing.rect.top
                         Colidee.velocity.y = 0
+                        Colidee.acceleration.y = 0
                         Colidee.isGrounded = True
                     else:
                         Colidee.rect.top = thing.rect.bottom
                         Colidee.velocity.y = 0
+                        Colidee.acceleration.y = 0
                 else:
                     if abs(Colidee.rect.left - thing.rect.right) <= abs(Colidee.rect.right - thing.rect.left):
                         Colidee.rect.left = thing.rect.right
