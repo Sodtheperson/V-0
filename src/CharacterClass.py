@@ -38,8 +38,23 @@ class Character(pygame.sprite.Sprite):
         self.isGrounded = False
         facingMult = {"r": 1, "l": -1}
         self.acceleration.x += 5 * facingMult[self.facing]
+
+
     def move_climb (self, collisionslist) -> None:
-        for thing in collisionslist:
+        print("CHECK COMMENTS")
+        # I think i might've found a workaround? 
+        # we can use pygame.rect.colliderect(), and make a separate rect for 1 frame, checking if it collides with a wall.
+        # if it collides (that being a pseudo distance-check), we can start the climbing
+        # if it doesnt, we dont start
+        # only problem is implementing debounce, and making sure it doesnt interfere with collision detection
+        # so we can make it so it forcefully offsets the x by +- 3-4 pixels
+        # and the same thing for y.
+        # if we want to use isGrounded, we have to make sure it cannot be changed by external means while
+        # climbing, which is why i wanted to make a separate bool called applyGravity.
+        # Though, if we can merge the two concepts, that would be better.
+        
+
+        """for thing in collisionslist:
             print("Called")
             if thing.state != 's': # solid
                 return
@@ -47,7 +62,7 @@ class Character(pygame.sprite.Sprite):
             if min(abs(self.rect.bottom - thing.rect.top),abs(self.rect.top - thing.rect.bottom)) > min(abs(self.rect.left - thing.rect.right),abs(self.rect.right - thing.rect.left)):
                 if (abs(self.rect.bottom - thing.rect.top) <= 100) and (self.velocity.y > -2.5):
                     self.velocity.y -= 4
-        return
+        return"""
     
     def look_left(self) -> None:
         if self.facing == "l":
