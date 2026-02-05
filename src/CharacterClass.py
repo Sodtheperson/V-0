@@ -45,8 +45,8 @@ class Character(pygame.sprite.Sprite):
                 return
             
             if min(abs(self.rect.bottom - thing.rect.top),abs(self.rect.top - thing.rect.bottom)) > min(abs(self.rect.left - thing.rect.right),abs(self.rect.right - thing.rect.left)):
-                if (abs(self.rect.bottom - thing.rect.top) <= 100) and (self.velocity.y > -2.5):
-                    self.velocity.y -= 4
+                #if (abs(self.rect.bottom - thing.rect.top) <= thing.rect.height + self.rect.height) and (self.velocity.y > -2.5):
+                self.velocity.y -= 4
         return
     
     def look_left(self) -> None:
