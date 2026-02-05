@@ -62,7 +62,7 @@ class Character(pygame.sprite.Sprite):
             if min(abs(self.rect.bottom - thing.rect.top),abs(self.rect.top - thing.rect.bottom)) > min(abs(self.rect.left - thing.rect.right),abs(self.rect.right - thing.rect.left)):
                 if (abs(self.rect.bottom - thing.rect.top) <= 100) and (self.velocity.y > -2.5):
                     self.velocity.y -= 4
-        return"""
+        return
     
     def look_left(self) -> None:
         if self.facing == "l":
