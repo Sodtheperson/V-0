@@ -37,6 +37,7 @@ class Button(Platform):
         super().__init__(pos, image, state='u', width=width, height=height)
         self.pressed = False
         self.was_colliding = False
+        self.base_pos = pos
 
         self.base_image = self.image
         self.pressed_image = pygame.transform.scale(self.base_image, (self.rect.width, int(self.rect.height * 0.5)))
@@ -45,6 +46,10 @@ class Button(Platform):
         self.local_frame_check = 1
         if self.pressed:
             self.image = self.pressed_image
+            self.pos = pygame.math.Vector2(self.base_pos[0], self.base_pos[1] + self.rect.height)
+            self.rect = self.image.get_rect(topleft=self.pos)
             # we need to change it from tuples to pygame.vector2 so i can reassign position (though, theres probably a better way of doing this)
         else:
+            self.pos = self.base_pos
+            self.rect = self.image.get_rect(topleft=self.pos)
             self.image = self.base_image
