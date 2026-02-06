@@ -12,8 +12,13 @@ DEV_MODE = True #hi
 
 def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, E_key : bool = False) -> None:
     Colidee.isGrounded = False
-    collided_Buttons = []
     collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, False)
+    
+    for x in Collidergroup:
+        if isinstance(x, Button):
+            x.pressed = False
+            x.update()
+    
     for thing in collisionslist:
         if thing.state != 'u': # uncollidable
             
@@ -46,15 +51,8 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
         else: # Object Detection
             if isinstance(thing, Button):
-                is_colliding = Colidee.rect.colliderect(thing.rect)
-                if is_colliding and not thing.was_colliding:
-                    collided_Buttons.append(thing)
-                    if not thing.pressed:
-                        thing.pressed = True #THIS ENTIRE THING ISBROKEN-- DONT USE IT YET.
-                    else:
-                        thing.pressed = False
-                    thing.update()
-                thing.was_colliding = is_colliding
+                thing.pressed = True
+                thing.update()
                     
 
             if thing.isDoor == True and E_key: # Door detection
