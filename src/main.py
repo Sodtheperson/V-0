@@ -14,10 +14,10 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
     Colidee.isGrounded = False
     collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, False)
     
-    for x in Collidergroup:
-        if isinstance(x, Button):
-            x.pressed = False
-            x.update()
+    for obj in Collidergroup:
+        if isinstance(obj, Button):
+            obj.pressed = False
+            obj.update()
     
     for thing in collisionslist:
         if thing.state != 'u': # uncollidable
