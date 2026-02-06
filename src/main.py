@@ -13,7 +13,7 @@ tt = 0
 def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, E_key : bool = False) -> None:
     Colidee.isGrounded = False
 
-    collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, RemoveColliderfromList)
+    collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, False)
     
     for thing in collisionslist:
         if thing.state != 'u': # uncollidable
@@ -51,6 +51,7 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
     return
 #
 
+# Finds and Returns the longest group passed
 def maxGroup(group: list[Any], other: list[Any]):
     if len(group) >= len(other):
         return group
@@ -70,7 +71,7 @@ dt = 0
 font = pygame.font.SysFont(None, 30)
 
 Player = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.2, 5, "PlayerAnim")
-#Dog = Animal(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.3, 6, "PlayerAnim")
+Dog = Animal(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.3, 6, "PlayerAnim")
 
 SURPRISE = pygame.mixer.Sound(os.path.join(asset_path, "hi.wav"))
 
@@ -90,7 +91,7 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     
-    text_surface = font.render(f"Acceleration: {Player.acceleration} | Velocity: {Player.velocity} | Grounded: {Player.isGrounded}", True, (255, 255, 255)) #text on screen
+    text_surface = font.render(f"Acceleration: {Dog.acceleration} | Velocity: {Dog.velocity} | Grounded: {Dog.isGrounded}", True, (255, 255, 255)) #text on screen
     text_rect = text_surface.get_rect() #size of text
     text_rect.center = (400, 150) #position of text
     screen.blit(text_surface, text_rect) #push text to screen
@@ -124,9 +125,11 @@ while running:
         Player.acceleration.x = 0
     
     pygame.draw.rect(screen, "green", Player.rect, 2)
+    pygame.draw.rect(screen, "blue", Dog.rect, 2)
     
     #TODO: move this stuff into Character.update and call it here instead
     Player.update(dt)
+    Dog.update(dt, total_levels[CurrentLevel.num])
 
     if keys[pygame.K_e]:
         Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)),tt)

@@ -7,7 +7,6 @@ friction = 0.85
 air_resistence = 0.8
 terminal_velocity = 10
 gravity = 0.7
-walk_frame = 0
 
 pygame.mixer.init()
 
