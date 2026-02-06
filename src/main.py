@@ -6,15 +6,14 @@ from Constants import *
 from level import *
 from typing import Any
 tt = 0
-
+DEV_MODE = True
 
 #Helper function for collision. 
 
 def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveColliderfromList : bool = False, E_key : bool = False) -> None:
     Colidee.isGrounded = False
-
+    collided_Buttons = []
     collisionslist = pygame.sprite.spritecollide(Colidee, Collidergroup, False)
-    
     for thing in collisionslist:
         if thing.state != 'u': # uncollidable
             
@@ -45,9 +44,23 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                 Colidee.velocity.y = 0
                 Colidee.isGrounded = True
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-        else:
-            if thing.imagecolor == (255,255,255):
-                CurrentLevel.num += 1
+        else: # Object Detection
+            if isinstance(thing, Button):
+                is_colliding = Colidee.rect.colliderect(thing.rect)
+                if is_colliding and not thing.was_colliding:
+                    collided_Buttons.append(thing)
+                    if not thing.pressed:
+                        thing.pressed = True #THIS ENTIRE THING ISBROKEN-- DONT USE IT YET.
+                    else:
+                        thing.pressed = False
+                    thing.update()
+                thing.was_colliding = is_colliding
+                    
+
+            if thing.isDoor == True and E_key: # Door detection
+                Level.num += 1
+                Player.pos = Level.spawn_pos[Level.num]
+                Player.rect.center = Level.spawn_pos[Level.num]
     return
 #
 
@@ -110,9 +123,9 @@ while running:
         #TODO: remove jump keybind
         Player.move_jump(tt)
     if keys[pygame.K_s]:
-        if SURPRISE.get_num_channels() < 1:
+        if SURPRISE.get_num_channels() < 1 and DEV_MODE:
             SURPRISE.play() # REPLACE WITH DOG FUNCTION LINKED TO MOVEMENT + SOUND
-            CurrentLevel.num += 1
+            Level.num += 1
         
         
     
@@ -129,14 +142,14 @@ while running:
     
     #TODO: move this stuff into Character.update and call it here instead
     Player.update(dt)
-    Dog.update(dt, total_levels[CurrentLevel.num])
+    Dog.update(dt, Level.total[Level.num])
 
     if keys[pygame.K_e]:
         Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)),tt)
 
-    collisions(Player, total_levels[CurrentLevel.num], E_key=keys[pygame.K_e])
+    collisions(Player, Level.total[Level.num], E_key=keys[pygame.K_e])
     
-    match CurrentLevel.num:
+    match Level.num:
         case 0:
             test_level.draw(screen)
         case 1:

@@ -35,13 +35,13 @@ class Character(pygame.sprite.Sprite):
         self.look_left()
         if self.cur_act != self.move_left:
             self.cur_act = self.move_left
-            self.act_strt_time = tt
+        self.act_strt_time = tt
     def move_right(self, tt) -> None:
         self.acceleration.x = self.walkspeed
         self.look_right()
         if self.cur_act != self.move_right:
             self.cur_act = self.move_right
-            self.act_strt_time = tt
+        self.act_strt_time = tt
     
     def move_jump (self, tt) -> None:
         self.acceleration.y -= 2
@@ -102,7 +102,8 @@ class Character(pygame.sprite.Sprite):
                                     "Run",
                                     f"{(int(self.act_strt_time/8) % 4) + 1}.png"
                                     )
-            #print(int(self.act_strt_time*60/4)+1)
+
+
             raw_img = pygame.image.load(current_image).convert_alpha()
             tight_rect = raw_img.get_bounding_rect()
 
