@@ -1,10 +1,11 @@
 # Example file showing a circle moving on screen
 import pygame
 import pygame.math as pgm
-from CharacterClass import Character
+from CharacterClass import Character, Animal
 from Constants import *
-from level import test_level
+from level import *
 from typing import Any
+tt = 0
 
 
 #Helper function for collision. 
@@ -44,7 +45,9 @@ def collisions(Colidee : Character, Collidergroup : pygame.sprite.Group, RemoveC
                 Colidee.velocity.y = 0
                 Colidee.isGrounded = True
                 Colidee.pos = pygame.math.Vector2(Colidee.rect.center)
-            
+        else:
+            if thing.imagecolor == (255,255,255):
+                CurrentLevel.num += 1
     return
 #
 
@@ -58,18 +61,23 @@ def maxGroup(group: list[Any], other: list[Any]):
 # pygame setup
 pygame.init()
 pygame.font.init()
-screen = pygame.display.set_mode((1280, 720))
+pygame.mixer.init()
+screen = pygame.display.set_mode((screen_size[0], screen_size[1]))
 clock = pygame.time.Clock()
 running = True
 dt = 0
 
 font = pygame.font.SysFont(None, 30)
 
-Player = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.2, 5)
-Dog = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.3, 6)
+Player = Character(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.2, 5, "PlayerAnim")
+#Dog = Animal(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), 0.3, 6, "PlayerAnim")
+
+SURPRISE = pygame.mixer.Sound(os.path.join(asset_path, "hi.wav"))
 
 Player.acceleration.y = 1
 while running:
+    
+
     pygame.display.set_caption("SOMEBODY HELP ME") #little bar at the top
     
     # poll for events
@@ -92,25 +100,28 @@ while running:
     mod_keys = pygame.key.get_mods()
 
     
-    
+    #reset animations
+    if not keys[pygame.K_w] and not keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d] and not keys[pygame.K_e]:
+        Player.nothing(tt)
+
+
     if keys[pygame.K_w] and Player.isGrounded:
         #TODO: remove jump keybind
-        Player.move_jump()
+        Player.move_jump(tt)
     if keys[pygame.K_s]:
-        print("hi")
-        #either crouching or something else idk
+        if SURPRISE.get_num_channels() < 1:
+            SURPRISE.play() # REPLACE WITH DOG FUNCTION LINKED TO MOVEMENT + SOUND
+            CurrentLevel.num += 1
+        
         
     
     #Accelerate if moving left/right
     if keys[pygame.K_a]:
-        Player.move_left()
+        Player.move_left(tt)
     elif keys[pygame.K_d]:
-        Player.move_right()
+        Player.move_right(tt)
     elif Player.isGrounded:
         Player.acceleration.x = 0
-    
-    
-    
     
     pygame.draw.rect(screen, "green", Player.rect, 2)
     
@@ -118,12 +129,17 @@ while running:
     Player.update(dt)
 
     if keys[pygame.K_e]:
-        Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)))
+        Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)),tt)
 
-    collisions(Player, test_level, E_key=keys[pygame.K_e])
-    Player.pos = pygame.math.Vector2(Player.rect.center)
+    collisions(Player, total_levels[CurrentLevel.num], E_key=keys[pygame.K_e])
     
-    test_level.draw(screen)
+    match CurrentLevel.num:
+        case 0:
+            test_level.draw(screen)
+        case 1:
+            box_level.draw(screen)
+            
+    Player.pos = pygame.math.Vector2(Player.rect.center)
 
     screen.blit(Player.image, Player.rect)
     # flip() the display to put your work on screen
@@ -134,6 +150,7 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+    tt += 1
 
 pygame.quit()
 

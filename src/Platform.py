@@ -15,6 +15,7 @@ class Platform(pygame.sprite.Sprite):
         else:
             raise ValueError("Error in Platform Constructor: image and (width or height) were None")
         
+        self.imagecolor = image
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pos # stores the position of the top left pixel
 
