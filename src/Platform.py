@@ -42,7 +42,6 @@ class Button(Platform):
         self.base_image = self.image
         self.pressed_image = pygame.transform.scale(self.base_image, (self.rect.width, int(self.rect.height * 0.5)))
     def update(self):
-        print(self.pressed)
         self.local_frame_check = 1
         if self.pressed:
             self.image = self.pressed_image

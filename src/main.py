@@ -139,8 +139,8 @@ while running:
     pygame.draw.rect(screen, "blue", Dog.rect, 2)
     
     #TODO: move this stuff into Character.update and call it here instead
-    Player.update(dt)
-    Dog.update(dt, Level.total[Level.num])
+    Player.update(dt, tt)
+    Dog.update(dt, tt, Level.total[Level.num])
 
     if keys[pygame.K_e]:
         Player.move_climb(maxGroup(pygame.sprite.spritecollide(Player, test_level, False),pygame.sprite.spritecollide(Player, test_level, False)),tt)

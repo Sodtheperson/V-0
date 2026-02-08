@@ -1,7 +1,7 @@
 import os
 import pygame
 
-screen_size: tuple = (1280, 720)
+screen_size: tuple = (1200, 700)
 
 friction = 0.85
 air_resistence = 0.8

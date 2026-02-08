@@ -28,6 +28,7 @@ class Character(pygame.sprite.Sprite):
         self.velocity: pygame.Vector2 = pygame.Vector2(0,0)
         self.maxspeed: int = maxspeed
         self.isGrounded: bool = True
+        
     #
     
     def move_left (self, tt) -> None:
@@ -35,13 +36,13 @@ class Character(pygame.sprite.Sprite):
         self.look_left()
         if self.cur_act != self.move_left:
             self.cur_act = self.move_left
-        self.act_strt_time = tt
+            self.act_strt_time = tt
     def move_right(self, tt) -> None:
         self.acceleration.x = self.walkspeed
         self.look_right()
         if self.cur_act != self.move_right:
             self.cur_act = self.move_right
-        self.act_strt_time = tt
+            self.act_strt_time = tt
     
     def move_jump (self, tt) -> None:
         self.acceleration.y -= 2
@@ -54,7 +55,7 @@ class Character(pygame.sprite.Sprite):
 
 
     def move_climb (self, collisionslist, tt) -> None:
-        
+        self.acceleration.y -= 0.001
         for thing in collisionslist:
             if thing.state != 's': # solid
                 return
@@ -82,7 +83,7 @@ class Character(pygame.sprite.Sprite):
             self.act_strt_time = tt
         return
 
-    def update(self, dt):
+    def update(self, dt, tt):
         
         if (self.acceleration.y < gravity and not self.isGrounded):
             self.acceleration.y += 0.1
@@ -96,11 +97,9 @@ class Character(pygame.sprite.Sprite):
             self.velocity.x *= friction #decellerate if not moving (acceleration = 0)
         
         if (self.cur_act == self.move_left) or (self.cur_act == self.move_right):
-            current_image = os.path.join(base_path,
-                                    "assets",
-                                    "PlayerAnim",
+            current_image = os.path.join(self.asset_path,
                                     "Run",
-                                    f"{(int(self.act_strt_time/8) % 4) + 1}.png"
+                                    f"{(int((self.act_strt_time - tt)/8) % 4) + 1}.png"
                                     )
 
 
@@ -116,10 +115,8 @@ class Character(pygame.sprite.Sprite):
             
             self.image = self.base_image
         else:
-            current_image = os.path.join(base_path,
-                                    "assets",
-                                    "PlayerAnim",
-                                    "hahahah.png",
+            current_image = os.path.join(self.asset_path,
+                                    "still.png",
                                     )
             raw_img = pygame.image.load(current_image).convert_alpha()
             tight_rect = raw_img.get_bounding_rect()
@@ -191,7 +188,7 @@ class Animal(Character):
         
         return True
 
-    def select_action(self, dt, lvl):
+    def select_action(self, tt, lvl):
         if not self.isGrounded:
             return
         
@@ -201,33 +198,34 @@ class Animal(Character):
         if can_left and can_right and self.cur_act == self.move_sit:
             if self.act_strt_time >= 3*60:
                 self.cur_act = self.nothing
-                self.act_strt_time = dt
+                self.act_strt_time = tt
             return
         elif self.cur_act == self.move_jump_charge:
             if self.act_strt_time >= 2*60:
                 self.cur_act = self.nothing
-                self.act_strt_time = dt
+                self.act_strt_time = tt
             return
         elif can_left:
             if self.cur_act != self.move_left:
                 self.cur_act = self.move_left
-                self.act_strt_time = dt
+                self.act_strt_time = tt
             return
         elif can_right:
             if self.cur_act != self.move_right:
                 self.cur_act = self.move_right
-                self.act_strt_time = dt
+                self.act_strt_time = tt
             return
         elif self.cur_act == self.move_sit and self.act_strt_time >= 10*60:
             if self.cur_act != self.move_jump:
                 self.cur_act = self.move_jump
-                self.act_strt_time = dt
+                self.act_strt_time = tt
             return
     #
 
-    def update(self, tt, lvl) -> None:
-        super().update(tt)
+    def update(self, dt, tt, lvl) -> None:
+        super().update(dt, tt)
         self.select_action(tt, lvl)
+        print(self.cur_act)
         self.cur_act(tt)
         #finish later
         
